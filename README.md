@@ -1,4 +1,5 @@
 # SHIFU - CVE Finder Toolkit
+![SHIFU-Screenshot](https://github.com/Symbolexe/SHIFU/assets/140549630/44c669ce-731f-4ff0-992c-491fe18b2f4a)
 ## Introduction
 SHIFU is a comprehensive and powerful toolkit designed to streamline the process of finding detailed information about Common Vulnerabilities and Exposures (CVEs). Developed with security professionals, system administrators, and developers in mind, SHIFU offers a wide range of features and capabilities to simplify CVE research and analysis.
 ## Key Features
