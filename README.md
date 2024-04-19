@@ -36,6 +36,38 @@ To use SHIFU, ensure that you have the following prerequisites installed:
 
 - Install dependencies using bundler:
 ```bundle install```
+
+- use as a Python Package
+More info : https://pypi.org/project/shifucvefinder/
+
+- Example - 1
+```python
+from shifucvefinder import search_by_cve_id
+
+# Example usage
+cve_id = "CVE-2024-3096"
+search_by_cve_id(cve_id)
+```
+
+- Example -2
+```python
+from shifucvefinder import search_by_cve_id
+
+def main():
+    cve_ids = [
+        "CVE-2024-3096",
+        "CVE-2022-1234",
+        "CVE-2023-5678"
+    ]
+
+    for cve_id in cve_ids:
+        print(f"Searching for information about CVE ID: {cve_id}")
+        search_by_cve_id(cve_id)
+        print("=" * 50)
+
+if __name__ == "__main__":
+    main()
+```
 ## Usage Instructions
 1. Manual Input: Choose the option to enter CVE IDs manually. Provide the CVE IDs separated by commas (e.g., CVE-2024-3096,CVE-2022-1234) and follow the prompts.
 2. File Input: Choose the option to provide a file containing CVE IDs. Enter the name of the file when prompted, and SHIFU will process the CVEs one by one.
