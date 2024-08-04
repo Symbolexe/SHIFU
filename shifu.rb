@@ -1,6 +1,5 @@
 require 'json'
 require 'net/http'
-require 'cgi'
 
 # Colorize methods
 def red(text); "\e[31m#{text}\e[0m" end
@@ -18,18 +17,29 @@ end
 def search_by_cve_id(cve_id, output_file = nil)
   url = URI("https://access.redhat.com/labs/securitydataapi/cve.json?ids=#{cve_id}")
 
-  response = Net::HTTP.get_response(url)
+  begin
+    response = Net::HTTP.get_response(url)
 
-  case response.code
-  when "200"
-    cve_info = JSON.parse(response.body)[0]
-    display_cve_info(cve_info)
-
-    save_to_file(cve_info, output_file) if output_file
-  when "404"
-    puts "CVE '#{cve_id}' does not exist."
-  else
-    puts red("Error: Failed to retrieve CVE information. HTTP status code: #{response.code}")
+    case response.code
+    when "200"
+      begin
+        cve_info = JSON.parse(response.body)[0]
+        if cve_info.nil?
+          puts red("Error: No CVE information found for #{cve_id}.")
+        else
+          display_cve_info(cve_info)
+          save_to_file(cve_info, output_file) if output_file
+        end
+      rescue JSON::ParserError
+        puts red("Error: Failed to parse JSON response.")
+      end
+    when "404"
+      puts "CVE '#{cve_id}' does not exist."
+    else
+      puts red("Error: Failed to retrieve CVE information. HTTP status code: #{response.code}")
+    end
+  rescue StandardError => e
+    puts red("Error: #{e.message}")
   end
 end
 
@@ -63,7 +73,7 @@ end
 def process_cve_file(file_name)
   if File.exist?(file_name)
     File.foreach(file_name) do |line|
-      search_by_cve_id(line.strip, 'result-cves.txt')
+      search_by_cve_id(line.strip, 'result-cves.txt') unless line.strip.empty?
     end
   else
     puts red("Error: File '#{file_name}' not found.")
@@ -80,7 +90,6 @@ def run
       cve_ids = get_user_input("Enter CVE IDs separated by commas (e.g., CVE-2024-3096,CVE-2022-1234): ")
       if cve_ids.empty?
         puts "No CVE IDs provided."
-        save_to_file({}, 'result-cves.txt')
         break
       elsif valid_cve_ids?(cve_ids)
         cve_ids.split(",").each do |cve_id|
